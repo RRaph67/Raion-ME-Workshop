@@ -2,10 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../pages/home_page.dart';
-import '../pages/cart_page.dart';
-import '../pages/favorites_page.dart';
-import '../pages/favorites_page.dart' show ProfilePage;
-import '../atoms/app_badge.dart';
 import '../utils/app_theme.dart';
 import '../providers/app_provider.dart';
 
@@ -13,10 +9,7 @@ class MainShell extends StatelessWidget {
   const MainShell({super.key});
 
   static const List<Widget> _pages = [
-    HomePage(),
-    FavoritesPage(),
-    CartPage(),
-    ProfilePage(),
+    HomePage(), // hanya Home
   ];
 
   @override
@@ -26,27 +19,15 @@ class MainShell extends StatelessWidget {
     return Scaffold(
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 250),
-        child: _pages[provider.currentNavIndex],
+        child: _pages[0], // selalu Home
       ),
-      bottomNavigationBar: _BottomNav(
-        currentIndex: provider.currentNavIndex,
-        onTap: (i) => provider.setNavIndex(i),
-        cartCount: provider.cartCount,
-      ),
+      bottomNavigationBar: const _BottomNav(),
     );
   }
 }
 
 class _BottomNav extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onTap;
-  final int cartCount;
-
-  const _BottomNav({
-    required this.currentIndex,
-    required this.onTap,
-    required this.cartCount,
-  });
+  const _BottomNav();
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +48,15 @@ class _BottomNav extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(icon: Icons.home_rounded, label: 'Home', index: 0, current: currentIndex, onTap: onTap),
-              _NavItem(icon: Icons.favorite_rounded, label: 'Favorites', index: 1, current: currentIndex, onTap: onTap),
-              _NavCartItem(count: cartCount, current: currentIndex, onTap: onTap),
-              _NavItem(icon: Icons.person_rounded, label: 'Profile', index: 3, current: currentIndex, onTap: onTap),
+            children: const [
+              // Home aktif (klik)
+              _NavItem(icon: Icons.home_rounded, label: 'Home', isActive: true),
+              // Favorites tampil tapi tidak bisa diklik
+              _NavItem(icon: Icons.favorite_rounded, label: 'Favorites'),
+              // Cart tampil tapi tidak bisa diklik
+              _NavItem(icon: Icons.shopping_bag_rounded, label: 'Cart'),
+              // Profile tampil tapi tidak bisa diklik
+              _NavItem(icon: Icons.person_rounded, label: 'Profile'),
             ],
           ),
         ),
@@ -83,29 +68,23 @@ class _BottomNav extends StatelessWidget {
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final int index;
-  final int current;
-  final Function(int) onTap;
+  final bool isActive;
 
   const _NavItem({
     required this.icon,
     required this.label,
-    required this.index,
-    required this.current,
-    required this.onTap,
+    this.isActive = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = current == index;
-
     return GestureDetector(
-      onTap: () => onTap(index),
+      onTap: isActive ? () {} : null, // hanya aktif kalau isActive true
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.greenLight : Colors.transparent,
+          color: isActive ? AppColors.greenLight : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
@@ -113,10 +92,10 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.textLight,
+              color: isActive ? AppColors.primary : AppColors.textLight,
               size: 22,
             ),
-            if (isSelected) ...[
+            if (isActive) ...[
               const SizedBox(width: 6),
               Text(
                 label,
@@ -125,51 +104,6 @@ class _NavItem extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NavCartItem extends StatelessWidget {
-  final int count;
-  final int current;
-  final Function(int) onTap;
-
-  const _NavCartItem({required this.count, required this.current, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = current == 2;
-
-    return GestureDetector(
-      onTap: () => onTap(2),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.greenLight : Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CartBadge(
-              count: count,
-              child: Icon(
-                Icons.shopping_bag_rounded,
-                color: isSelected ? AppColors.primary : AppColors.textLight,
-                size: 22,
-              ),
-            ),
-            if (isSelected) ...[
-              const SizedBox(width: 6),
-              const Text(
-                'Cart',
-                style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
               ),
             ],
           ],

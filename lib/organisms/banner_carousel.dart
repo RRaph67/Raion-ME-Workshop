@@ -21,7 +21,7 @@ class BannerCarousel extends StatelessWidget {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            height: 165,
+            height: 220,
             viewportFraction: 0.92,
             enlargeCenterPage: true,
             enlargeFactor: 0.08,

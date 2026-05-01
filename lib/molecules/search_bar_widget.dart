@@ -1,8 +1,6 @@
 // lib/molecules/search_bar_widget.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
-import '../providers/app_provider.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final VoidCallback? onFilterTap;
@@ -29,20 +27,21 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
         Expanded(
           child: TextField(
             controller: _controller,
-            onChanged: (v) => context.read<AppProvider>().updateSearch(v),
             decoration: InputDecoration(
-              hintText: 'Search fresh products...',
+              hintText: 'Cari Buah Pilihanmu...',
               prefixIcon: const Padding(
                 padding: EdgeInsets.all(12),
-                child: Icon(Icons.search_rounded, color: AppColors.textLight, size: 22),
+                child: Icon(Icons.search_rounded,
+                    color: AppColors.textLight, size: 22),
               ),
               suffixIcon: _controller.text.isNotEmpty
                   ? IconButton(
                       onPressed: () {
                         _controller.clear();
-                        context.read<AppProvider>().updateSearch('');
+                        setState(() {}); // hanya reset tampilan
                       },
-                      icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textLight),
+                      icon: const Icon(Icons.close_rounded,
+                          size: 18, color: AppColors.textLight),
                     )
                   : null,
               filled: true,
@@ -58,7 +57,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                borderSide:
+                    const BorderSide(color: AppColors.primary, width: 1.5),
               ),
             ),
           ),
@@ -81,7 +81,8 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
                   ),
                 ],
               ),
-              child: const Icon(Icons.tune_rounded, color: Colors.white, size: 22),
+              child:
+                  const Icon(Icons.tune_rounded, color: Colors.white, size: 22),
             ),
           ),
         ],

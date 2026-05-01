@@ -23,6 +23,7 @@ class ProductGrid extends StatelessWidget {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 40),
             Icon(Icons.search_off_rounded, size: 64, color: AppColors.textLight),
@@ -54,7 +55,7 @@ class ProductGrid extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
-          childAspectRatio: 0.72,
+          childAspectRatio: 0.65,
         ),
         itemCount: products.length,
         itemBuilder: (context, index) {
@@ -92,7 +93,7 @@ class FlashSaleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 240,
+      height: 280,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),

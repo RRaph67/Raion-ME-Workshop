@@ -13,8 +13,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cartCount = context.watch<AppProvider>().cartCount;
-
     return AppBar(
       backgroundColor: AppColors.background,
       elevation: 0,
@@ -34,7 +32,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'FreshMarket',
+                'Workshop Raion 1',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -42,7 +40,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               Text(
-                'Your daily freshness 🌿',
+                'Yuk Beli Buah Segar',
                 style: TextStyle(
                   fontSize: 10,
                   color: AppColors.textSecondary,
@@ -74,17 +72,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
             ],
-          ),
-        ),
-        // Cart
-        Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: CartBadge(
-            count: cartCount,
-            child: IconButton(
-              onPressed: () => context.read<AppProvider>().setNavIndex(2),
-              icon: const Icon(Icons.shopping_bag_outlined, size: 24, color: AppColors.textPrimary),
-            ),
           ),
         ),
       ],
