@@ -1,23 +1,41 @@
 // lib/pages/home_page.dart
 import 'package:flutter/material.dart';
-import '../organisms/home_app_bar.dart';
-import '../organisms/banner_carousel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/product/product_bloc.dart';
+import '../bloc/product/product_event.dart';
 import '../organisms/product_grid.dart';
 import '../organisms/section_header.dart';
+import '../organisms/banner_carousel.dart';
 import '../molecules/search_bar_widget.dart';
-import '../utils/app_data.dart';
 import '../utils/app_theme.dart';
-import '../models/product_model.dart';
-import 'product_detail_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<String> _categories = ['Semua', 'Kopi', 'Non-Kopi', 'Makanan'];
+  String _selectedCategory = 'Semua';
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch produk pertama kali
+    context.read<ProductBloc>().add(const FetchProducts());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const HomeAppBar(),
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        title: const Text('FreshMarket'),
+      ),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -25,17 +43,30 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Search bar (dummy, tidak ada logic)
+                // Search bar (dummy)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                   child: SearchBarWidget(onFilterTap: () {}),
                 ),
 
-                // Carousel Banner
-                BannerCarousel(banners: AppData.banners),
+                // Banner carousel
+                BannerCarousel(banners: const []), // isi sesuai model Banner
                 const SizedBox(height: 24),
 
-                // Flash Sale
+                // Filter kategori
+                _CategoryFilter(
+                  categories: _categories,
+                  selected: _selectedCategory,
+                  onSelected: (cat) {
+                    setState(() => _selectedCategory = cat);
+                    context.read<ProductBloc>().add(
+                          FetchProducts(category: cat == 'Semua' ? null : cat),
+                        );
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Flash Sale Section
                 SectionHeader(
                   title: 'Flash Sale',
                   subtitle: 'Sikat Diskonya Bosqq',
@@ -51,10 +82,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-                FlashSaleSection(
-                  products: AppData.flashSaleProducts,
-                  onProductTap: (p) => _goToDetail(context, p),
-                ),
+                const FlashSaleSection(), // organism baru pakai BlocBuilder
                 const SizedBox(height: 24),
 
                 // Browse Products
@@ -73,10 +101,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-                ProductGrid(
-                  products: AppData.products,
-                  onProductTap: (p) => _goToDetail(context, p),
-                ),
+                const ProductGrid(), // organism baru pakai BlocBuilder
                 const SizedBox(height: 24),
               ],
             ),
@@ -85,12 +110,46 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _goToDetail(BuildContext context, Product product) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProductDetailPage(product: product),
+/// Molecule sederhana untuk filter kategori
+class _CategoryFilter extends StatelessWidget {
+  final List<String> categories;
+  final String selected;
+  final ValueChanged<String> onSelected;
+
+  const _CategoryFilter({
+    required this.categories,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final cat = categories[index];
+          final isActive = cat == selected;
+          return FilterChip(
+            label: Text(cat),
+            selected: isActive,
+            onSelected: (_) => onSelected(cat),
+            selectedColor: AppColors.primary,
+            labelStyle: TextStyle(
+              color: isActive ? Colors.white : AppColors.primary,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+            backgroundColor: const Color(0xFFE8F5E0),
+            checkmarkColor: Colors.white,
+          );
+        },
       ),
     );
   }

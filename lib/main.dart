@@ -1,10 +1,14 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'providers/app_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // ✅ Tambahan untuk Bloc
+import 'package:fresh_market/bloc/product/product_event.dart';
+import 'bloc/product/product_bloc.dart'; // ✅ Import Bloc Product
+import 'repositories/product_repository.dart'; // ✅ Import Repository
 import 'templates/main_shell.dart';
 import 'utils/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'providers/app_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,13 +21,20 @@ void main() {
   runApp(const FreshMarketApp());
 }
 
+
 class FreshMarketApp extends StatelessWidget {
   const FreshMarketApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()), // ✅ tambahkan kembali
+        BlocProvider(
+          create: (_) => ProductBloc(repository: ProductRepositoryImpl())
+            ..add(const FetchProducts()),
+        ),
+      ],
       child: MaterialApp(
         title: 'WorkShop1 Raion',
         debugShowCheckedModeBanner: false,
@@ -33,6 +44,8 @@ class FreshMarketApp extends StatelessWidget {
     );
   }
 }
+
+
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
